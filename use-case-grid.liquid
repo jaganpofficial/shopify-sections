@@ -1,0 +1,141 @@
+{% schema %}
+{
+  "name": "Use Case Image Grid",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "use_case",
+      "name": "Use Case Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "YOGA"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background Color",
+          "default": "#f5f5f5"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Use Case Grid – Hover Text",
+      "blocks": [
+        { "type": "use_case" },
+        { "type": "use_case" },
+        { "type": "use_case" },
+        { "type": "use_case" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+.usecase-section {
+  width: 100%;
+}
+
+.usecase-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.usecase-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.usecase-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* subtle overlay */
+.usecase-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.15);
+  z-index: 1;
+}
+
+/* CENTERED TITLE */
+.usecase-title {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgb(255, 255, 255);
+  z-index: 2;
+
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.35s ease;
+}
+
+/* SHOW ON HOVER (DESKTOP) */
+.usecase-card:hover .usecase-title {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* TABLET */
+@media (max-width: 1024px) {
+  .usecase-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .usecase-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .usecase-title {
+    opacity: 1;
+    transform: none;
+    font-size: 15px;
+    letter-spacing: 2px;
+  }
+}
+</style>
+
+<div class="usecase-section">
+  <div class="usecase-grid">
+    {% for block in section.blocks %}
+      <div
+        class="usecase-card"
+        style="--bg: {{ block.settings.bg_color }}"
+        {{ block.shopify_attributes }}
+      >
+        {% if block.settings.image != blank %}
+          {{ block.settings.image | image_url: width: 1600 | image_tag: loading: 'lazy' }}
+        {% endif %}
+        <div class="usecase-title">
+          {{ block.settings.title }}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

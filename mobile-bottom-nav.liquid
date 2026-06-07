@@ -1,0 +1,229 @@
+{% schema %}
+{
+  "name": "Mobile Bottom Nav",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon & Text Color",
+      "default": "#707070"
+    },
+    {
+      "type": "color",
+      "id": "active_color",
+      "label": "Active Highlight Color",
+      "default": "#000000" 
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Navigation Link",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Label",
+          "default": "Category"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "category", "label": "Category" },
+            { "value": "track", "label": "Track" },
+            { "value": "return", "label": "Return" },
+            { "value": "help", "label": "Help" },
+            { "value": "store", "label": "Locate Store" }
+          ],
+          "default": "category"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Mobile Bottom Nav",
+      "blocks": [
+        { "type": "link", "settings": { "title": "Category", "icon": "category" } },
+        { "type": "link", "settings": { "title": "Track", "icon": "track" } },
+        { "type": "link", "settings": { "title": "Return", "icon": "return" } },
+        { "type": "link", "settings": { "title": "Help", "icon": "help" } },
+        { "type": "link", "settings": { "title": "Locate Store", "icon": "store" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+/* Hide entirely on desktop */
+.mobile-bottom-nav-wrapper {
+  display: none;
+}
+
+/* Show only on mobile screens */
+@media screen and (max-width: 768px) {
+  body {
+    /* Prevent the footer from hiding behind the sticky menu */
+    padding-bottom: 90px !important;
+  }
+
+  .mobile-bottom-nav-wrapper {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: {{ section.settings.bg_color }};
+    /* Match the rounded corners from the screenshot */
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+    z-index: 99999;
+    padding: 16px 10px 25px; /* Extra bottom padding for modern iOS/Android home bars */
+    justify-content: space-evenly;
+    align-items: flex-end;
+    /* Smooth sliding animation */
+    transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+    transform: translateY(0);
+  }
+
+  /* This class is added by Javascript when scrolling down */
+  .mobile-bottom-nav-wrapper.nav-hidden {
+    transform: translateY(110%);
+  }
+
+  .mobile-bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    text-decoration: none;
+    color: {{ section.settings.icon_color }};
+    flex: 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-bottom-nav-item svg {
+    width: 25px;
+    height: 25px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    margin-bottom: 6px;
+  }
+
+  .mobile-bottom-nav-item span {
+    font-size: 11px;
+    font-weight: 500;
+    font-family: inherit;
+    letter-spacing: 0.2px;
+    color: inherit;
+  }
+
+  .mobile-bottom-nav-item:hover,
+  .mobile-bottom-nav-item:active {
+    color: {{ section.settings.active_color }};
+  }
+}
+</style>
+
+<div class="mobile-bottom-nav-wrapper" id="MobileBottomNav">
+  {% for block in section.blocks %}
+    <a href="{{ block.settings.link | default: '#' }}" class="mobile-bottom-nav-item" {{ block.shopify_attributes }}>
+      {%- case block.settings.icon -%}
+        {%- when 'category' -%}
+          <!-- Exact Category Icon (Squares and Circles) -->
+          <svg viewBox="0 0 24 24">
+            <rect x="4" y="4" width="6" height="6" rx="1"></rect>
+            <circle cx="17" cy="7" r="3"></circle>
+            <circle cx="7" cy="17" r="3"></circle>
+            <rect x="14" y="14" width="6" height="6" rx="1"></rect>
+          </svg>
+        {%- when 'track' -%}
+          <!-- Exact Track Icon (Delivery Truck) -->
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="6" width="12" height="11" rx="2"></rect>
+            <path d="M15 9h3.5a2 2 0 0 1 1.5.6l2 2.4V17h-7"></path>
+            <circle cx="7" cy="17" r="2"></circle>
+            <circle cx="17" cy="17" r="2"></circle>
+          </svg>
+        {%- when 'return' -%}
+          <!-- Exact Return Icon (Box with arrow inside) -->
+          <svg viewBox="0 0 24 24">
+            <rect x="4" y="5" width="16" height="15" rx="3"></rect>
+            <line x1="4" y1="10" x2="20" y2="10"></line>
+            <path d="M11 14h2a2 2 0 0 0 0-4h-3"></path>
+            <polyline points="12 8 10 10 12 12"></polyline>
+          </svg>
+        {%- when 'help' -%}
+          <!-- Exact Help Icon (Question Mark) -->
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        {%- when 'store' -%}
+          <!-- Exact Store Icon (Storefront) -->
+          <svg viewBox="0 0 24 24">
+            <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"></path>
+            <path d="M3 9l2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"></path>
+            <path d="M12 3v6"></path>
+            <path d="M8 21v-5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5"></path>
+          </svg>
+      {%- endcase -%}
+      <span>{{ block.settings.title }}</span>
+    </a>
+  {% endfor %}
+</div>
+
+<!-- JAVASCRIPT FOR THE SCROLL HIDE/SHOW EFFECT -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileNav = document.getElementById('MobileBottomNav');
+    if (!mobileNav) return;
+
+    let lastScrollY = window.scrollY;
+    
+    // A small buffer so the menu doesn't jitter on tiny thumb movements
+    const scrollThreshold = 15; 
+
+    window.addEventListener('scroll', function() {
+      const currentScrollY = window.scrollY;
+      
+      // Always show the navigation bar if the user is at the very top of the page
+      if (currentScrollY <= 0) {
+        mobileNav.classList.remove('nav-hidden');
+        lastScrollY = currentScrollY;
+        return;
+      }
+      
+      // If the user scrolls down
+      if (currentScrollY > lastScrollY + scrollThreshold) {
+        mobileNav.classList.add('nav-hidden'); // Slides menu down out of view
+        lastScrollY = currentScrollY;
+      } 
+      // If the user scrolls up
+      else if (currentScrollY < lastScrollY - scrollThreshold) {
+        mobileNav.classList.remove('nav-hidden'); // Slides menu back up into view
+        lastScrollY = currentScrollY;
+      }
+    }, { passive: true });
+  });
+</script>

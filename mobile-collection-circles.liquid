@@ -1,0 +1,576 @@
+<div class="mobile-collection-circles">
+  <div class="collection-circles-wrapper">
+    <div class="collection-circles-scroll">
+      {%- for block in section.blocks -%}
+        <a href="{{ block.settings.collection.url | default: '#' }}" 
+           class="collection-circle-item"
+           {{ block.shopify_attributes }}>
+          <div class="circle-image-wrapper">
+            {%- if block.settings.image != blank -%}
+              {%- comment -%} USE CUSTOM IMAGE FIRST {%- endcomment -%}
+              <img 
+                src="{{ block.settings.image | image_url: width: 300 }}" 
+                alt="{{ block.settings.title | default: 'Collection' | escape }}"
+                loading="lazy"
+                class="circle-image">
+            {%- elsif block.settings.collection != blank and block.settings.collection.image -%}
+              {%- comment -%} FALLBACK TO COLLECTION IMAGE {%- endcomment -%}
+              <img 
+                src="{{ block.settings.collection.image | image_url: width: 300 }}" 
+                alt="{{ block.settings.title | default: block.settings.collection.title | escape }}"
+                loading="lazy"
+                class="circle-image">
+            {%- else -%}
+              {%- comment -%} PLACEHOLDER IF NO IMAGE {%- endcomment -%}
+              <div class="circle-placeholder">
+                {{ 'collection-1' | placeholder_svg_tag }}
+              </div>
+            {%- endif -%}
+          </div>
+          {%- comment -%} ALWAYS USE CUSTOM TITLE, NEVER COLLECTION TITLE {%- endcomment -%}
+          <span class="circle-title">
+            {%- if block.settings.title != blank -%}
+              {{ block.settings.title }}
+            {%- else -%}
+              {{ block.settings.collection.title | default: 'Untitled' }}
+            {%- endif -%}
+          </span>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<style>
+/* ============================================================
+   BASE STYLES — Visible on ALL screen sizes
+   ============================================================ */
+.mobile-collection-circles {
+  display: block;
+  background: {{ section.settings.background_color }};
+  padding: {{ section.settings.padding_vertical }}px 0;
+  border-bottom: {{ section.settings.border_width }}px solid {{ section.settings.border_color }};
+  position: relative;
+  z-index: 1;
+  margin-top: 0;
+}
+
+.collection-circles-wrapper {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.collection-circles-scroll {
+  display: flex;
+  gap: {{ section.settings.item_gap }}px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0 {{ section.settings.side_padding }}px;
+}
+
+.collection-circles-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* === COLLECTION CIRCLE ITEM === */
+.collection-circle-item {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: {{ section.settings.title_spacing }}px;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+.collection-circle-item:active {
+  transform: scale(0.95);
+}
+
+/* === CIRCLE IMAGE === */
+.circle-image-wrapper {
+  width: {{ section.settings.circle_size }}px;
+  height: {{ section.settings.circle_size }}px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: {{ section.settings.circle_background }};
+  border: {{ section.settings.circle_border_width }}px solid {{ section.settings.circle_border_color }};
+  box-shadow: {{ section.settings.circle_shadow }};
+  position: relative;
+  flex-shrink: 0;
+}
+
+.circle-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.circle-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+}
+
+.circle-placeholder svg {
+  width: 60%;
+  height: 60%;
+  opacity: 0.3;
+}
+
+/* === CIRCLE TITLE === */
+.circle-title {
+  font-size: {{ section.settings.title_font_size }}px;
+  font-weight: {{ section.settings.title_font_weight }};
+  color: {{ section.settings.title_color }};
+  text-align: center;
+  line-height: 1.2;
+  max-width: {{ section.settings.circle_size | plus: 20 }}px;
+  display: block;
+  text-transform: {{ section.settings.title_transform }};
+  letter-spacing: 0.5px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  word-wrap: break-word;
+}
+
+/* ============================================================
+   DESKTOP STYLES — above mobile breakpoint
+   ============================================================ */
+@media screen and (min-width: {{ section.settings.mobile_breakpoint | plus: 1 }}px) {
+  .mobile-collection-circles {
+    padding: {{ section.settings.desktop_padding_vertical }}px 0;
+  }
+
+  /* Centre the circles row and allow wrapping on desktop */
+  .collection-circles-scroll {
+    justify-content: {{ section.settings.desktop_alignment }};
+    flex-wrap: {{ section.settings.desktop_wrap }};
+    overflow-x: unset;          /* no horizontal scroll on desktop */
+    padding: 0 {{ section.settings.desktop_side_padding }}px;
+    gap: {{ section.settings.desktop_item_gap }}px;
+  }
+
+  /* Larger circles on desktop */
+  .circle-image-wrapper {
+    width: {{ section.settings.desktop_circle_size }}px;
+    height: {{ section.settings.desktop_circle_size }}px;
+  }
+
+  /* Slightly larger title on desktop */
+  .circle-title {
+    font-size: {{ section.settings.desktop_title_font_size }}px;
+    max-width: {{ section.settings.desktop_circle_size | plus: 20 }}px;
+  }
+
+  /* Subtle hover lift on desktop */
+  .collection-circle-item:hover {
+    transform: translateY(-4px);
+  }
+
+  .collection-circle-item:active {
+    transform: scale(0.97);
+  }
+}
+
+/* ============================================================
+   MOBILE — below breakpoint (keep original compact sizing)
+   ============================================================ */
+@media screen and (max-width: {{ section.settings.mobile_breakpoint }}px) {
+  /* Responsive sizes for very small phones */
+  @media screen and (max-width: 480px) {
+    .mobile-collection-circles {
+      padding: {{ section.settings.padding_vertical | times: 0.8 | round: 0 }}px 0;
+    }
+
+    .circle-image-wrapper {
+      width: {{ section.settings.circle_size | times: 0.9 | round: 0 }}px;
+      height: {{ section.settings.circle_size | times: 0.9 | round: 0 }}px;
+    }
+
+    .circle-title {
+      font-size: {{ section.settings.title_font_size | times: 0.9 | round: 0 }}px;
+      max-width: {{ section.settings.circle_size | times: 0.9 | plus: 20 | round: 0 }}px;
+    }
+
+    .collection-circles-scroll {
+      gap: {{ section.settings.item_gap | times: 0.8 | round: 0 }}px;
+    }
+  }
+}
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  // Touch-drag scroll enhancement — only needed on mobile
+  if (window.innerWidth <= {{ section.settings.mobile_breakpoint }}) {
+    const scrollContainer = document.querySelector('.collection-circles-scroll');
+    
+    if (scrollContainer) {
+      let isScrolling = false;
+      let startX;
+      let scrollLeft;
+
+      scrollContainer.addEventListener('touchstart', function(e) {
+        isScrolling = true;
+        startX = e.touches[0].pageX - scrollContainer.offsetLeft;
+        scrollLeft = scrollContainer.scrollLeft;
+      });
+
+      scrollContainer.addEventListener('touchmove', function(e) {
+        if (!isScrolling) return;
+        e.preventDefault();
+        const x = e.touches[0].pageX - scrollContainer.offsetLeft;
+        const walk = (x - startX) * 2;
+        scrollContainer.scrollLeft = scrollLeft - walk;
+      });
+
+      scrollContainer.addEventListener('touchend', function() {
+        isScrolling = false;
+      });
+    }
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Collection Circles",
+  "class": "section-mobile-collection-circles",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Visibility / Breakpoint"
+    },
+    {
+      "type": "range",
+      "id": "mobile_breakpoint",
+      "min": 600,
+      "max": 990,
+      "step": 10,
+      "unit": "px",
+      "label": "Mobile Breakpoint",
+      "default": 770,
+      "info": "Below this width mobile sizes apply; above this width desktop sizes apply."
+    },
+    {
+      "type": "header",
+      "content": "Section Style (shared)"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Bottom Border Color",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Bottom Border Width",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Top/Bottom Padding (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "side_padding",
+      "min": 10,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Side Padding (Mobile)",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "circle_size",
+      "min": 60,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Circle Size (Mobile)",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "item_gap",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap Between Circles (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Title Font Size (Mobile)",
+      "default": 13
+    },
+    {
+      "type": "header",
+      "content": "Desktop Settings"
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_vertical",
+      "min": 10,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Top/Bottom Padding (Desktop)",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "desktop_side_padding",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Side Padding (Desktop)",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "desktop_circle_size",
+      "min": 80,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Circle Size (Desktop)",
+      "default": 130
+    },
+    {
+      "type": "range",
+      "id": "desktop_item_gap",
+      "min": 10,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap Between Circles (Desktop)",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "desktop_title_font_size",
+      "min": 10,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "label": "Title Font Size (Desktop)",
+      "default": 15
+    },
+    {
+      "type": "select",
+      "id": "desktop_alignment",
+      "label": "Circle Alignment (Desktop)",
+      "options": [
+        {"value": "flex-start", "label": "Left"},
+        {"value": "center", "label": "Center"},
+        {"value": "space-between", "label": "Space Between"},
+        {"value": "space-around", "label": "Space Around"},
+        {"value": "space-evenly", "label": "Space Evenly"}
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "desktop_wrap",
+      "label": "Circle Wrap (Desktop)",
+      "options": [
+        {"value": "nowrap", "label": "Single Row (scroll)"},
+        {"value": "wrap", "label": "Wrap to Multiple Rows"}
+      ],
+      "default": "wrap",
+      "info": "Wrap = circles wrap to next line. Single Row = horizontal scroll like mobile."
+    },
+    {
+      "type": "header",
+      "content": "Circle Style (shared)"
+    },
+    {
+      "type": "color",
+      "id": "circle_background",
+      "label": "Circle Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "circle_border_color",
+      "label": "Circle Border Color",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "range",
+      "id": "circle_border_width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Circle Border Width",
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "circle_shadow",
+      "label": "Circle Shadow",
+      "options": [
+        {"value": "none", "label": "None"},
+        {"value": "0 2px 8px rgba(0,0,0,0.08)", "label": "Small"},
+        {"value": "0 4px 12px rgba(0,0,0,0.12)", "label": "Medium"},
+        {"value": "0 6px 16px rgba(0,0,0,0.15)", "label": "Large"}
+      ],
+      "default": "0 2px 8px rgba(0,0,0,0.08)"
+    },
+    {
+      "type": "header",
+      "content": "Title Style (shared)"
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "Title Font Weight",
+      "options": [
+        {"value": "400", "label": "Regular"},
+        {"value": "500", "label": "Medium"},
+        {"value": "600", "label": "Semi Bold"},
+        {"value": "700", "label": "Bold"}
+      ],
+      "default": "600"
+    },
+    {
+      "type": "select",
+      "id": "title_transform",
+      "label": "Title Text Transform",
+      "options": [
+        {"value": "none", "label": "None"},
+        {"value": "uppercase", "label": "Uppercase"},
+        {"value": "capitalize", "label": "Capitalize"}
+      ],
+      "default": "capitalize"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "title_spacing",
+      "min": 5,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Space Between Circle & Title",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection Circle",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Custom Title",
+          "default": "New Arrivals",
+          "info": "⭐ This title will always be used (not collection name)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom Circle Image",
+          "info": "⭐ Use this for custom image. Recommended: 300 x 300 px (square)"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Link to Collection",
+          "info": "Collection to link to. Image only used if no custom image above."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Circles",
+      "blocks": [
+        {
+          "type": "collection",
+          "settings": {
+            "title": "New Arrivals"
+          }
+        },
+        {
+          "type": "collection",
+          "settings": {
+            "title": "Kurtas"
+          }
+        },
+        {
+          "type": "collection",
+          "settings": {
+            "title": "Co-ords"
+          }
+        },
+        {
+          "type": "collection",
+          "settings": {
+            "title": "Tops"
+          }
+        },
+        {
+          "type": "collection",
+          "settings": {
+            "title": "Dresses"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

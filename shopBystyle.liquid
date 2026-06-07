@@ -1,0 +1,473 @@
+{%- comment -%}
+Shop By Style — Final section
+- Top toggle: Sporty / Fashion with grey base underline + blue sliding bar
+- Left toggle: Men / Women fixed pill (160px) with sliding blue bubble and white text
+- Swiper: autoplay, loop, navigation arrows (left/right)
+- Mobile: arrows placed beside product image (not covering product name), minimal bottom whitespace
+- Unique schema IDs for images and collections
+- Pre-renders 4 product templates server-side and injects slides client-side
+{%- endcomment -%}
+
+<section id="shop-by-style-{{ section.id }}" class="shop-by-style-section">
+
+  <!-- Scoped styles -->
+  <style>
+    /* Basic container */
+    #shop-by-style-{{ section.id }} { font-family: inherit; padding: 20px 16px; box-sizing: border-box; }
+    .sbs-inner { max-width:1360px; margin:0 auto; }
+
+    /* Title */
+    .sbs-title { text-align:center; font-size:30px; font-weight:800; margin-bottom:16px; color:#222; text-transform:uppercase; letter-spacing:.06em; }
+
+    /* Top toggle (Sporty / Fashion) exact look */
+    .sbs-top-toggle { width:260px; margin:0 auto 18px auto; position:relative; display:flex; justify-content:space-between; padding-bottom:12px; }
+    .sbs-top-option { background:none; border:0; font-weight:700; font-size:16px; cursor:pointer; color:#555; text-transform:uppercase; letter-spacing:0.06em; padding:6px 6px; }
+    .sbs-top-toggle::after { content:""; position:absolute; left:0; right:0; bottom:0; height:3px; background:#d6d6d6; border-radius:4px; }
+    .sbs-top-indicator { position:absolute; bottom:0; height:3px; background:#0b74ff; border-radius:4px; width:60px; left:0; transition:left .28s ease, width .28s ease; }
+
+    /* Layout */
+    .sbs-content { display:flex; gap:24px; align-items:stretch; }
+    .sbs-left { flex:0 0 40%; max-width:40%; position:relative; }
+    .sbs-right { flex:1; min-width:0; position:relative; }
+
+    /* Left bg */
+    .sbs-left-bg { width:100%; padding-top:80%; background-size:cover; background-position:center; border-radius:8px; position:relative; overflow:hidden; transition:opacity .36s ease, transform .36s ease; }
+    .sbs-left-bg.sbs-fade-out { opacity:0; transform:scale(.998); }
+    .sbs-left-bg.sbs-fade-in { opacity:1; transform:scale(1); }
+
+    /* Centered gender toggle on left image */
+    .sbs-left-overlay { position:absolute; left:0; right:0; top:0; bottom:0; display:flex; align-items:flex-end; justify-content:center; padding-bottom:26px; pointer-events:none; }
+    .sbs-gender-toggle-centered { pointer-events:auto; }
+
+    /* Men/Women fixed pill 160px */
+    .sbs-gender-toggle {
+      position:relative; width:160px; height:36px; border-radius:50px; background:#3a3a3a; overflow:hidden;
+      display:flex; align-items:center; justify-content:space-between; box-sizing:border-box;
+    }
+    .sbs-gender-indicator {
+      position:absolute; top:0; left:0; width:80px; height:100%; border-radius:50px;
+      background:linear-gradient(90deg,#0b74ff,#0066d6); box-shadow:0 8px 20px rgba(11,116,255,0.18);
+      transition:left .22s cubic-bezier(.2,.9,.25,1); z-index:1;
+    }
+    .sbs-gender-option {
+      z-index:2; width:80px; height:36px; background:transparent; border:0; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; color:#fff;
+    }
+    /* inactive will be slightly dimmer via JS color set */
+
+    /* Right side (product slider) */
+    .sbs-swiper-wrap { position:relative; width:100%; }
+    .sbs-product-card { background:#fff; border-radius:10px; overflow:hidden; border:1px solid #eee; padding:10px; box-sizing:border-box; }
+    .sbs-pimg img { width:100%; height:260px; object-fit:cover; border-radius:8px; display:block; }
+    .sbs-pmeta { padding:10px 6px 4px; }
+    .sbs-ptitle { font-size:14px; font-weight:600; color:#222; margin-bottom:6px; }
+    .sbs-pprice { font-size:14px; color:#555; font-weight:700; }
+
+    .sbs-slide { padding:6px; box-sizing:border-box; }
+
+    /* Swiper navigation (desktop) */
+    .sbs-swiper-nav { position:absolute; top:12px; right:12px; display:flex; gap:10px; z-index:40; pointer-events:auto; }
+    .sbs-swiper-prev, .sbs-swiper-next { width:40px; height:40px; border-radius:999px; border:none; display:inline-flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.96); box-shadow:0 6px 18px rgba(0,0,0,0.08); cursor:pointer; }
+    .sbs-swiper-prev::before, .sbs-swiper-next::before { content:''; display:block; width:10px; height:10px; border-top:3px solid #333; border-right:3px solid #333; }
+    .sbs-swiper-prev::before { transform: rotate(-135deg); }
+    .sbs-swiper-next::before { transform: rotate(45deg); }
+
+    /* Focus */
+    .sbs-top-option:focus, .sbs-gender-option:focus, .sbs-swiper-prev:focus, .sbs-swiper-next:focus { outline:3px solid rgba(11,116,255,0.14); outline-offset:2px; }
+
+    /* Mobile adjustments */
+    @media (max-width: 768px) {
+      .sbs-content { flex-direction:column; gap:16px; }
+      .sbs-left, .sbs-right { max-width:100%; flex-basis:100%; }
+      .sbs-left-bg { padding-top:64%; }
+      .sbs-pimg img { height:200px; }
+
+      /* Mobile: arrows aligned with product image but outside text area */
+      .sbs-swiper-nav {
+        position:absolute;
+        top:35%;
+        left:0;
+        right:0;
+        width:100%;
+        display:flex;
+        justify-content:space-between;
+        padding:0 6px;
+        pointer-events:none;
+        z-index:45;
+      }
+      .sbs-swiper-prev, .sbs-swiper-next {
+        width:34px; height:34px; pointer-events:auto; border-radius:50%; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.15);
+        transform:translateY(-50%);
+      }
+
+      .sbs-product-card { padding-bottom:12px !important; }
+      .sbs-pmeta { margin-top:8px; }
+      .sbs-slide { margin-bottom:0 !important; }
+      .sbs-swiper-wrap { padding-bottom:0 !important; }
+    }
+  </style>
+
+  <div class="sbs-inner">
+    <!-- Header -->
+    <div class="sbs-header">
+      <h2 class="sbs-title">{{ section.settings.section_title | default: "SHOP BY STYLE" }}</h2>
+
+      <!-- Top toggle -->
+      <div class="sbs-top-toggle" role="tablist" aria-label="Shop by style">
+        <button type="button" class="sbs-top-option" data-style="sporty" aria-pressed="true">{{ section.settings.tab1_label | default: "Sporty" }}</button>
+        <button type="button" class="sbs-top-option" data-style="fashion" aria-pressed="false">{{ section.settings.tab2_label | default: "Fashion" }}</button>
+        <div class="sbs-top-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="sbs-content">
+      <!-- Left -->
+      <div class="sbs-left">
+        <div class="sbs-left-bg sbs-fade-in" id="sbs-left-bg-{{ section.id }}" style="background-image: url('{{ section.settings.sporty_men_image | image_url: width:1600 }}');">
+          <div class="sbs-left-overlay">
+            <div class="sbs-gender-toggle-centered">
+              <div class="sbs-gender-toggle" role="tablist" aria-label="Choose gender">
+                <div class="sbs-gender-indicator" aria-hidden="true"></div>
+                <button type="button" class="sbs-gender-option" data-gender="men" aria-pressed="true">MEN</button>
+                <button type="button" class="sbs-gender-option" data-gender="women" aria-pressed="false">WOMEN</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div class="sbs-right">
+        <div class="sbs-swiper-wrap">
+          <div class="swiper sbs-swiper" id="sbs-swiper-{{ section.id }}">
+            <div class="swiper-wrapper">
+              <!-- slides inserted by JS -->
+            </div>
+
+            <!-- nav -->
+            <div class="sbs-swiper-nav" aria-hidden="true">
+              <button class="sbs-swiper-prev" aria-label="Previous slide" type="button"></button>
+              <button class="sbs-swiper-next" aria-label="Next slide" type="button"></button>
+            </div>
+
+            <!-- optional pagination -->
+            <!-- <div class="swiper-pagination"></div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden templates -->
+  <div class="sbs-templates" style="display:none !important; visibility:hidden; height:0; overflow:hidden;">
+    <!-- SPORTY MEN -->
+    <div class="sbs-template" data-style="sporty" data-gender="men">
+      <div class="sbs-slide-list">
+        {% assign coll = collections[section.settings.sporty_men_collection] %}
+        {% if coll and coll.products_count > 0 %}
+          {% for product in coll.products limit: 12 %}
+            <div class="sbs-slide">
+              <div class="sbs-product-card">
+                <a href="{{ product.url }}">
+                  {% if product.featured_image %}
+                    <div class="sbs-pimg"><img src="{{ product.featured_image | image_url: width:900 }}" alt="{{ product.title }}"></div>
+                  {% endif %}
+                  <div class="sbs-pmeta"><div class="sbs-ptitle">{{ product.title }}</div><div class="sbs-pprice">{{ product.price | money }}</div></div>
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- SPORTY WOMEN -->
+    <div class="sbs-template" data-style="sporty" data-gender="women">
+      <div class="sbs-slide-list">
+        {% assign coll = collections[section.settings.sporty_women_collection] %}
+        {% if coll and coll.products_count > 0 %}
+          {% for product in coll.products limit: 12 %}
+            <div class="sbs-slide">
+              <div class="sbs-product-card">
+                <a href="{{ product.url }}">
+                  {% if product.featured_image %}
+                    <div class="sbs-pimg"><img src="{{ product.featured_image | image_url: width:900 }}" alt="{{ product.title }}"></div>
+                  {% endif %}
+                  <div class="sbs-pmeta"><div class="sbs-ptitle">{{ product.title }}</div><div class="sbs-pprice">{{ product.price | money }}</div></div>
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- FASHION MEN -->
+    <div class="sbs-template" data-style="fashion" data-gender="men">
+      <div class="sbs-slide-list">
+        {% assign coll = collections[section.settings.fashion_men_collection] %}
+        {% if coll and coll.products_count > 0 %}
+          {% for product in coll.products limit: 12 %}
+            <div class="sbs-slide">
+              <div class="sbs-product-card">
+                <a href="{{ product.url }}">
+                  {% if product.featured_image %}
+                    <div class="sbs-pimg"><img src="{{ product.featured_image | image_url: width:900 }}" alt="{{ product.title }}"></div>
+                  {% endif %}
+                  <div class="sbs-pmeta"><div class="sbs-ptitle">{{ product.title }}</div><div class="sbs-pprice">{{ product.price | money }}</div></div>
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- FASHION WOMEN -->
+    <div class="sbs-template" data-style="fashion" data-gender="women">
+      <div class="sbs-slide-list">
+        {% assign coll = collections[section.settings.fashion_women_collection] %}
+        {% if coll and coll.products_count > 0 %}
+          {% for product in coll.products limit: 12 %}
+            <div class="sbs-slide">
+              <div class="sbs-product-card">
+                <a href="{{ product.url }}">
+                  {% if product.featured_image %}
+                    <div class="sbs-pimg"><img src="{{ product.featured_image | image_url: width:900 }}" alt="{{ product.title }}"></div>
+                  {% endif %}
+                  <div class="sbs-pmeta"><div class="sbs-ptitle">{{ product.title }}</div><div class="sbs-pprice">{{ product.price | money }}</div></div>
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Swiper CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <!-- Main JS (scoped) -->
+  <script>
+    (function(){
+      var sectionSel = "#shop-by-style-{{ section.id }}";
+      var leftBgEl = document.querySelector(sectionSel + " .sbs-left-bg");
+      var topToggleEl = document.querySelector(sectionSel + " .sbs-top-toggle");
+      var topOptions = topToggleEl ? topToggleEl.querySelectorAll(".sbs-top-option") : [];
+      var topIndicator = topToggleEl ? topToggleEl.querySelector(".sbs-top-indicator") : null;
+
+      var genderToggle = document.querySelector(sectionSel + " .sbs-gender-toggle");
+      var genderOptions = genderToggle ? genderToggle.querySelectorAll(".sbs-gender-option") : [];
+      var genderIndicator = genderToggle ? genderToggle.querySelector(".sbs-gender-indicator") : null;
+
+      var templatesRoot = document.querySelector(sectionSel + " .sbs-templates");
+      var visibleSwiperEl = document.getElementById("sbs-swiper-{{ section.id }}");
+      var swiperInstance = null;
+
+      var images = {
+        sporty: {
+          men: "{{ section.settings.sporty_men_image | image_url: width:1600 }}",
+          women: "{{ section.settings.sporty_women_image | image_url: width:1600 }}"
+        },
+        fashion: {
+          men: "{{ section.settings.fashion_men_image | image_url: width:1600 }}",
+          women: "{{ section.settings.fashion_women_image | image_url: width:1600 }}"
+        }
+      };
+
+      // initial state
+      var currentStyle = "sporty";
+      var currentGender = "men";
+
+      // helper: get template html
+      function getTemplateHtml(style, gender) {
+        var selector = '.sbs-template[data-style="' + style + '"][data-gender="' + gender + '"] .sbs-slide-list';
+        var node = templatesRoot.querySelector(selector);
+        return node ? node.innerHTML : "";
+      }
+
+      // populate slides
+      function populateSwiperSlides(style, gender) {
+        var wrapper = visibleSwiperEl.querySelector(".swiper-wrapper");
+        var html = getTemplateHtml(style, gender);
+        if (!html) {
+          wrapper.innerHTML = '<div class="swiper-slide"><div style="padding:40px;text-align:center;color:#777;">No products found</div></div>';
+          return;
+        }
+        var converted = html.replace(/class="sbs-slide"/g, 'class="swiper-slide"');
+        wrapper.innerHTML = converted;
+      }
+
+      // init swiper
+      function initSwiper() {
+        if (!visibleSwiperEl) return;
+        if (swiperInstance) {
+          try { swiperInstance.destroy(true, true); } catch(e) { /* ignore */ }
+          swiperInstance = null;
+        }
+        swiperInstance = new Swiper(visibleSwiperEl, {
+          slidesPerView: 3,
+          spaceBetween: 20,
+          loop: true,
+          autoplay: { delay: 4000, disableOnInteraction: false },
+          speed: 700,
+          allowTouchMove: true,
+          breakpoints: {
+            0: { slidesPerView: 1 },
+            700: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 }
+          },
+          navigation: {
+            nextEl: sectionSel + ' .sbs-swiper-next',
+            prevEl: sectionSel + ' .sbs-swiper-prev'
+          }
+        });
+      }
+
+      // update left background
+      function updateLeftBackground(style, gender) {
+        if (!leftBgEl) return;
+        var newUrl = images[style] && images[style][gender] ? images[style][gender] : "";
+        leftBgEl.classList.add("sbs-fade-out");
+        leftBgEl.classList.remove("sbs-fade-in");
+        setTimeout(function(){
+          leftBgEl.style.backgroundImage = newUrl ? "url('" + newUrl + "')" : "none";
+          leftBgEl.classList.remove("sbs-fade-out");
+          leftBgEl.classList.add("sbs-fade-in");
+        }, 240);
+      }
+
+      // update top indicator (position & width)
+      function updateTopIndicator() {
+        if (!topToggleEl || !topIndicator) return;
+        var active = topToggleEl.querySelector('.sbs-top-option[aria-pressed="true"]');
+        if (!active) return;
+        var rectToggle = topToggleEl.getBoundingClientRect();
+        var rectActive = active.getBoundingClientRect();
+        var left = rectActive.left - rectToggle.left;
+        topIndicator.style.width = rectActive.width + 'px';
+        topIndicator.style.left = left + 'px';
+        // color
+        topToggleEl.querySelectorAll('.sbs-top-option').forEach(function(t){ t.style.color = '#555'; });
+        active.style.color = '#0b74ff';
+      }
+
+      // update gender indicator (blue bubble left/right)
+      function updateGenderIndicator() {
+        if (!genderToggle || !genderIndicator) return;
+        var active = genderToggle.querySelector('.sbs-gender-option[aria-pressed="true"]');
+        if (!active) return;
+        var rectToggle = genderToggle.getBoundingClientRect();
+        var rectActive = active.getBoundingClientRect();
+        // If halves equal, move by half width
+        var leftPx = active.dataset.gender === 'men' ? '0px' : (rectToggle.width/2) + 'px';
+        genderIndicator.style.left = leftPx;
+        // set text colors: active bright, inactive dim
+        genderToggle.querySelectorAll('.sbs-gender-option').forEach(function(g){
+          if (g.dataset.gender === active.dataset.gender) g.style.color = '#ffffff';
+          else g.style.color = '#f1f1f1';
+        });
+      }
+
+      // update UI attributes
+      function updateActiveUI() {
+        // top
+        topToggleEl.querySelectorAll('.sbs-top-option').forEach(function(t){
+          t.setAttribute('aria-pressed', t.dataset.style === currentStyle ? 'true' : 'false');
+        });
+        // gender
+        genderToggle.querySelectorAll('.sbs-gender-option').forEach(function(g){
+          g.setAttribute('aria-pressed', g.dataset.gender === currentGender ? 'true' : 'false');
+        });
+        requestAnimationFrame(function(){ updateTopIndicator(); updateGenderIndicator(); });
+      }
+
+      // master update
+      function updateAll() {
+        updateLeftBackground(currentStyle, currentGender);
+        populateSwiperSlides(currentStyle, currentGender);
+        initSwiper();
+        updateActiveUI();
+      }
+
+      // top toggle events
+      topToggleEl.querySelectorAll('.sbs-top-option').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var style = this.dataset.style;
+          if (!style || style === currentStyle) return;
+          currentStyle = style;
+          currentGender = 'men';
+          updateAll();
+        });
+        btn.addEventListener('keydown', function(e){
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+        });
+      });
+
+      // gender toggle events
+      genderToggle.querySelectorAll('.sbs-gender-option').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var gender = this.dataset.gender;
+          if (!gender || gender === currentGender) return;
+          currentGender = gender;
+          updateAll();
+        });
+        btn.addEventListener('keydown', function(e){
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            var opts = Array.prototype.slice.call(genderToggle.querySelectorAll('.sbs-gender-option'));
+            var idx = opts.indexOf(this);
+            if (e.key === 'ArrowLeft') idx = Math.max(0, idx-1);
+            if (e.key === 'ArrowRight') idx = Math.min(opts.length-1, idx+1);
+            opts[idx].focus(); opts[idx].click();
+          }
+        });
+      });
+
+      // initial
+      document.addEventListener('DOMContentLoaded', function(){
+        populateSwiperSlides(currentStyle, currentGender);
+        initSwiper();
+        updateActiveUI();
+        if (leftBgEl) leftBgEl.classList.add('sbs-fade-in');
+        setTimeout(function(){ updateTopIndicator(); updateGenderIndicator(); }, 140);
+      });
+
+      // resize
+      window.addEventListener('resize', function(){
+        if (swiperInstance && typeof swiperInstance.update === 'function') swiperInstance.update();
+        updateTopIndicator(); updateGenderIndicator();
+      });
+
+    })();
+  </script>
+
+  <!-- Schema -->
+  {% schema %}
+  {
+    "name": "Shop By Style",
+    "settings": [
+      { "type": "text", "id": "section_title", "label": "Section title", "default": "SHOP BY STYLE" },
+      { "type": "text", "id": "tab1_label", "label": "Tab 1 label", "default": "Sporty" },
+      { "type": "text", "id": "tab2_label", "label": "Tab 2 label", "default": "Fashion" },
+
+      { "type": "image_picker", "id": "sporty_men_image", "label": "Sporty - Men background image" },
+      { "type": "image_picker", "id": "sporty_women_image", "label": "Sporty - Women background image" },
+      { "type": "image_picker", "id": "fashion_men_image", "label": "Fashion - Men background image" },
+      { "type": "image_picker", "id": "fashion_women_image", "label": "Fashion - Women background image" },
+
+      { "type": "collection", "id": "sporty_men_collection", "label": "Sporty - Men collection" },
+      { "type": "collection", "id": "sporty_women_collection", "label": "Sporty - Women collection" },
+      { "type": "collection", "id": "fashion_men_collection", "label": "Fashion - Men collection" },
+      { "type": "collection", "id": "fashion_women_collection", "label": "Fashion - Women collection" }
+    ],
+    "presets": [
+      { "name": "Shop By Style", "category": "Home page" }
+    ]
+  }
+  {% endschema %}
+
+</section>

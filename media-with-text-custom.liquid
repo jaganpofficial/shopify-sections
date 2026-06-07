@@ -1,0 +1,275 @@
+{% schema %}
+{
+  "name": "Media with Text Custom",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media Settings"
+    },
+    {
+      "type": "select",
+      "id": "media_type",
+      "label": "Media Type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Shopify Hosted Video"
+    },
+    {
+      "type": "textarea",
+      "id": "overlay_text",
+      "label": "Overlay Text (on Media)",
+      "default": "GO<br>WIN THE<br>WORLD.",
+      "info": "Use <br> for line breaks"
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "richtext",
+      "id": "text_content",
+      "label": "Description Text",
+      "default": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>"
+    },
+    {
+      "type": "text",
+      "id": "btn_label",
+      "label": "Button Label",
+      "default": "KNOW MORE"
+    },
+    {
+      "type": "url",
+      "id": "btn_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Colors & Layout"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section Background",
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button Background",
+      "default": "#009bd9"
+    },
+    {
+      "type": "color",
+      "id": "btn_text",
+      "label": "Button Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Desktop Layout",
+      "options": [
+        { "value": "left", "label": "Media Left - Text Right" },
+        { "value": "right", "label": "Text Left - Media Right" }
+      ],
+      "default": "left"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Media with Text Custom"
+    }
+  ]
+}
+{% endschema %}
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,900&display=swap" rel="stylesheet">
+
+<style>
+  .mwt-section {
+    background-color: {{ section.settings.bg_color }};
+    padding: 0;
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .mwt-container {
+    max-width: 1000px; /* Reduced from 1200px */
+    margin: 0 auto;
+    padding: 40px 20px; /* Reduced padding */
+  }
+  
+  .mwt-grid {
+    display: flex;
+    flex-direction: {% if section.settings.layout == 'left' %}row{% else %}row-reverse{% endif %};
+    background: #fff; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    border-radius: 4px; /* Slight rounded corners for neatness */
+    overflow: hidden;
+  }
+  
+  /* --- MEDIA COLUMN --- */
+  .mwt-media-col {
+    flex: 1; /* 50% width */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #000;
+    overflow: hidden;
+    min-height: 300px; /* Ensure minimum height */
+  }
+  
+  .mwt-media-col img,
+  .mwt-media-col video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image covers area neatly */
+    display: block;
+  }
+  
+  /* Overlay Text */
+  .mwt-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
+    pointer-events: none;
+    z-index: 2;
+    padding: 0 20px;
+  }
+  .mwt-overlay-text {
+    font-family: 'Roboto', sans-serif;
+    font-size: 42px; /* Reduced size */
+    font-weight: 900;
+    font-style: italic;
+    line-height: 0.95;
+    color: #ffffff;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 8px rgba(0,0,0,0.4);
+  }
+
+  /* --- TEXT COLUMN --- */
+  .mwt-text-col {
+    flex: 1; /* 50% width */
+    padding: 40px; /* Reduced padding */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+  }
+  
+  .mwt-desc {
+    font-size: 15px; /* Slightly smaller text */
+    line-height: 1.6;
+    color: {{ section.settings.text_color }};
+    margin-bottom: 25px;
+    font-weight: 400;
+  }
+  
+  .mwt-btn {
+    display: inline-block;
+    background-color: {{ section.settings.btn_bg }};
+    color: {{ section.settings.btn_text }};
+    padding: 12px 28px; /* More compact button */
+    text-decoration: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 1px;
+    border-radius: 3px;
+    align-self: flex-start;
+    transition: opacity 0.3s;
+    border: none;
+    font-style: normal;
+  }
+  .mwt-btn:hover {
+    opacity: 0.9;
+  }
+
+  /* --- RESPONSIVE --- */
+  @media (max-width: 768px) {
+    .mwt-container { padding: 20px 15px; }
+    .mwt-grid { flex-direction: column; }
+    
+    .mwt-media-col {
+      width: 100%;
+      height: 250px; /* Fixed height for mobile image */
+      flex: none;
+    }
+    
+    .mwt-text-col {
+      padding: 30px 20px;
+      text-align: center;
+    }
+    
+    .mwt-btn {
+      align-self: center;
+    }
+    
+    .mwt-overlay-text {
+      font-size: 32px;
+    }
+  }
+</style>
+
+<div class="mwt-section">
+  <div class="mwt-container">
+    <div class="mwt-grid">
+      
+      <!-- Media Side -->
+      <div class="mwt-media-col">
+        {% if section.settings.media_type == 'video' and section.settings.video != blank %}
+          {{ section.settings.video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, class: 'media-element' }}
+        {% else %}
+          {% if section.settings.image != blank %}
+            {{ section.settings.image | image_url: width: 1000 | image_tag: loading: 'lazy', class: 'media-element' }}
+          {% else %}
+            {{ 'lifestyle-1' | placeholder_svg_tag }}
+          {% endif %}
+        {% endif %}
+        
+        <!-- Overlay Text -->
+        {% if section.settings.overlay_text != blank %}
+          <div class="mwt-overlay">
+            <div class="mwt-overlay-text">{{ section.settings.overlay_text }}</div>
+          </div>
+        {% endif %}
+      </div>
+      
+      <!-- Content Side -->
+      <div class="mwt-text-col">
+        <div class="mwt-desc">
+          {{ section.settings.text_content }}
+        </div>
+        
+        {% if section.settings.btn_label != blank %}
+          <a href="{{ section.settings.btn_link }}" class="mwt-btn">
+            {{ section.settings.btn_label }}
+          </a>
+        {% endif %}
+      </div>
+      
+    </div>
+  </div>
+</div>

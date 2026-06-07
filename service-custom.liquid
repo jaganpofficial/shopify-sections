@@ -1,0 +1,227 @@
+{% schema %}
+{
+  "name": "Service Guarantee",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "icon_width",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Icon Size",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature Column",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Fast, Free Shipping"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Description",
+          "default": "Sign up for an account and get free shipping on every order"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Service Guarantee",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "title": "FAST, FREE SHIPPING",
+            "text": "Sign up for debongofashion.com account and get free shipping on every order"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "title": "WORRY-FREE RETURNS",
+            "text": "Not happy? Return your purchase for free within 7 days."
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "title": "SECURE PAYMENT",
+            "text": "We use encrypted, trusted gateways to keep your payment safe."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<!-- Load Roboto Condensed Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  .guarantee-section {
+    background-color: {{ section.settings.bg_color }};
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    width: 100%;
+    font-family: 'Roboto Condensed', sans-serif; /* Global Font */
+    color: #000000; /* Base Solid Black */
+  }
+
+  .guarantee-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 60px; /* Increased gap for better breathing room */
+  }
+
+  .guarantee-item {
+    flex: 1;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .guarantee-icon-wrapper {
+    width: {{ section.settings.icon_width }}px;
+    height: {{ section.settings.icon_width }}px;
+    margin-bottom: 25px; /* More space below icon */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .guarantee-icon-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Fallback SVG styles */
+  .guarantee-icon-wrapper svg {
+    width: 100%;
+    height: 100%;
+    stroke: #000000; /* Solid Black */
+    stroke-width: 1.5px;
+  }
+
+  .guarantee-title {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700; /* BOLD */
+    text-transform: uppercase;
+    margin: 0 0 12px 0;
+    color: #000000; /* Solid Black */
+    letter-spacing: 1px;
+    line-height: 1.2;
+  }
+
+  .guarantee-text {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 15px; /* Readable body size */
+    font-weight: 400; /* REGULAR */
+    line-height: 1.6; /* Cleaner line height */
+    color: #000000; /* Solid Black */
+    max-width: 300px;
+    margin: 0;
+  }
+  
+  @media (max-width: 768px) {
+    .guarantee-container {
+      gap: 40px;
+    }
+    .guarantee-icon-wrapper {
+      margin-bottom: 15px;
+    }
+  }
+</style>
+
+<div class="guarantee-section">
+  <div class="guarantee-container">
+    {% for block in section.blocks %}
+      <div class="guarantee-item" {{ block.shopify_attributes }}>
+        
+        <div class="guarantee-icon-wrapper">
+          {% if block.settings.icon != blank %}
+            {{ block.settings.icon | image_url: width: 200 | image_tag: loading: 'lazy' }}
+          {% else %}
+            <!-- Default Placeholder Icons -->
+            {% case forloop.index %}
+              {% when 1 %}
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                 </svg>
+              {% when 2 %}
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                   <polyline points="23 4 23 10 17 10"></polyline>
+                   <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                 </svg>
+              {% else %}
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                   <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                   <line x1="1" y1="10" x2="23" y2="10"></line>
+                 </svg>
+            {% endcase %}
+          {% endif %}
+        </div>
+
+        <h3 class="guarantee-title">{{ block.settings.title }}</h3>
+        <p class="guarantee-text">{{ block.settings.text }}</p>
+
+      </div>
+    {% endfor %}
+  </div>
+</div>

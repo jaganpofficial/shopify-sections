@@ -1,0 +1,276 @@
+<div class="custom-icon-text-{{ section.id }}" style="background-color: {{ section.settings.bg_color }}; padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px; border-top: {{ section.settings.border_thickness }}px solid {{ section.settings.border_color }}; border-bottom: {{ section.settings.border_thickness }}px solid {{ section.settings.border_color }};">
+  <div class="page-width">
+    <div class="custom-icon-text-wrapper">
+      {% for block in section.blocks %}
+        <div class="custom-icon-text-item" {{ block.shopify_attributes }}>
+          <div class="custom-icon-wrapper" style="color: {{ block.settings.icon_color }};">
+            {% if block.settings.custom_svg != blank %}
+              {{ block.settings.custom_svg }}
+            {% elsif block.settings.image != blank %}
+              <img src="{{ block.settings.image | image_url: width: 100 }}" alt="{{ block.settings.text | escape }}" loading="lazy" width="{{ section.settings.icon_size }}" height="{{ section.settings.icon_size }}">
+            {% else %}
+               <!-- Default fallback SVG -->
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+            {% endif %}
+          </div>
+          <div class="custom-text-wrapper" style="color: {{ section.settings.text_color }}; font-size: {{ section.settings.text_size }}px;">
+            {{ block.settings.text }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .custom-icon-text-{{ section.id }} {
+    width: 100%;
+  }
+  .custom-icon-text-{{ section.id }} .page-width {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .custom-icon-text-{{ section.id }} .custom-icon-text-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: {{ section.settings.gap_desktop }}px;
+  }
+  .custom-icon-text-{{ section.id }} .custom-icon-text-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .custom-icon-text-{{ section.id }} .custom-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: {{ section.settings.icon_size }}px;
+    height: {{ section.settings.icon_size }}px;
+  }
+  .custom-icon-text-{{ section.id }} .custom-icon-wrapper svg {
+    width: 100%;
+    height: 100%;
+  }
+  .custom-icon-text-{{ section.id }} .custom-text-wrapper {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+  }
+
+  @media screen and (max-width: 768px) {
+    .custom-icon-text-{{ section.id }} .custom-icon-text-wrapper {
+      gap: {{ section.settings.gap_mobile }}px;
+      {% if section.settings.mobile_layout == 'stack' %}
+        flex-direction: column;
+        align-items: center; 
+      {% else %}
+        flex-direction: row;
+        justify-content: space-around;
+      {% endif %}
+    }
+    {% if section.settings.mobile_layout == 'row' %}
+    .custom-icon-text-{{ section.id }} .custom-icon-text-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+        flex: 1 1 0;
+    }
+    .custom-icon-text-{{ section.id }} .custom-text-wrapper {
+        font-size: {{ section.settings.text_size | minus: 2 }}px !important;
+    }
+    {% endif %}
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Trust Badges",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 36
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#eaeaea"
+    },
+    {
+      "type": "range",
+      "id": "border_thickness",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Top & Bottom Border",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Space between items (Desktop)",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile Layout",
+      "options": [
+        {
+          "value": "stack",
+          "label": "Stack vertically"
+        },
+        {
+          "value": "row",
+          "label": "Row (Icon above text)"
+        }
+      ],
+      "default": "stack"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 10,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Space between items (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Typography & Icon Sizes"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Text Size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "min": 16,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "label": "Icon Size",
+      "default": 28
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image Icon",
+          "info": "PNG or JPG format"
+        },
+        {
+          "type": "html",
+          "id": "custom_svg",
+          "label": "Custom SVG Code",
+          "info": "Paste SVG code here. Overrides Image Icon."
+        },
+        {
+          "type": "color",
+          "id": "icon_color",
+          "label": "Icon Color (for SVG)",
+          "default": "#999999",
+          "info": "Applies to SVG icons that use 'currentColor'"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Feature Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust Badges / Icons",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "text": "15 DAYS RETURNS",
+            "custom_svg": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\"></path><polyline points=\"3.27 6.96 12 12.01 20.73 6.96\"></polyline><line x1=\"12\" y1=\"22.08\" x2=\"12\" y2=\"12\"></line></svg>",
+            "icon_color": "#b5b5b5"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "text": "EASY REFUNDS",
+            "custom_svg": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 2v20\"></path><path d=\"M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6\"></path></svg>",
+            "icon_color": "#b5b5b5"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "text": "FREE DELIVERY",
+            "custom_svg": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"1\" y=\"3\" width=\"15\" height=\"13\"></rect><polygon points=\"16 8 20 8 23 11 23 16 16 16 16 8\"></polygon><circle cx=\"5.5\" cy=\"18.5\" r=\"2.5\"></circle><circle cx=\"18.5\" cy=\"18.5\" r=\"2.5\"></circle></svg>",
+            "icon_color": "#b5b5b5"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

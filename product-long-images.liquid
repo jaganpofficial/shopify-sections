@@ -1,0 +1,108 @@
+<section class="product-long-images">
+
+  <div class="long-images-container">
+
+    <!-- DYNAMIC HEADING -->
+    <h2 class="long-images-heading">
+      Results of  {{ product.title }}
+    </h2>
+
+    {% for block in section.blocks %}
+      {% if block.settings.image != blank %}
+        <div class="long-image-wrap">
+          <img
+            src="{{ block.settings.image | img_url: '2000x' }}"
+            alt="{{ block.settings.image.alt | escape }}"
+            loading="lazy"
+            width="2000"
+            height="auto"
+          >
+        </div>
+      {% endif %}
+    {% endfor %}
+
+  </div>
+
+</section>
+
+<style>
+/* SECTION SPACING */
+.product-long-images {
+  padding-top: 50px;   /* top padding */
+  padding-bottom: 0;
+  width: 100%;
+}
+
+/* CENTERED WIDTH  */
+.long-images-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* HEADING */
+.long-images-heading {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  color: #1d6b3a;
+  margin-bottom: 30px;
+}
+
+/* EACH IMAGE */
+.long-image-wrap {
+  width: 100%;
+  line-height: 0;
+  margin-bottom: 0;
+}
+
+.long-image-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* MOBILE OPTIMIZATION */
+@media (max-width: 768px) {
+
+  .product-long-images {
+    padding-top: 35px;
+  }
+
+  .long-images-container {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .long-images-heading {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Product  Image Section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Long Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Upload Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product – Results Image Section"
+    }
+  ]
+}
+{% endschema %}

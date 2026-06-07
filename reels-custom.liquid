@@ -1,0 +1,357 @@
+{% schema %}
+{
+  "name": "Trending Reels",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "WHAT'S TRENDING FOR"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Desktop Heading Size",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Mobile Heading Size",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4,
+      "label": "Number of Columns (Desktop)"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Corner Radius",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "reel",
+      "name": "Video Reel",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video_file",
+          "label": "Video (MP4)"
+        },
+        {
+          "type": "image_picker",
+          "id": "cover_image",
+          "label": "Cover Image (Fallback)"
+        }
+      ]
+    },
+    {
+      "type": "see_more",
+      "name": "See More Reel",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "video",
+          "id": "video_file",
+          "label": "Video (MP4)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Cover Image (Fallback)"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Button Text",
+          "default": "See more >"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link URL (Instagram)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trending Reels",
+      "blocks": [
+        { "type": "reel" },
+        { "type": "reel" },
+        { "type": "reel" },
+        { "type": "see_more" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<!-- Load Roboto Condensed Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+
+<style>
+  .reels-section {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    max-width: 1400px;
+    margin: 0 auto;
+    overflow: hidden;
+    font-family: sans-serif;
+  }
+
+  .reels-heading {
+    text-align: center;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: 700; /* Bold */
+    font-size: {{ section.settings.heading_size_mobile }}px; /* Mobile Size from Settings */
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #333;
+    line-height: 1.2;
+  }
+
+  @media (min-width: 768px) {
+    .reels-heading {
+      font-size: {{ section.settings.heading_size_desktop }}px; /* Desktop Size from Settings */
+      margin-bottom: 40px;
+    }
+  }
+
+  /* GRID / SCROLL CONTAINER */
+  .reels-grid {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 0 20px 20px 20px; 
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    justify-content: flex-start;
+  }
+  .reels-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (min-width: 990px) {
+    .reels-grid {
+      display: grid;
+      grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr);
+      overflow-x: visible;
+      padding: 0 40px;
+      gap: 24px;
+      justify-content: center;
+    }
+  }
+
+  /* CARDS */
+  .reel-card {
+    position: relative;
+    flex: 0 0 70%; /* Wider on mobile for better visibility */
+    aspect-ratio: 9 / 16;
+    border-radius: {{ section.settings.border_radius }}px;
+    overflow: hidden;
+    background: #f0f0f0;
+    scroll-snap-align: center;
+    transform: translateZ(0);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+
+  @media (min-width: 600px) {
+    .reel-card {
+      flex: 0 0 45%;
+    }
+  }
+  @media (min-width: 990px) {
+    .reel-card {
+      flex: unset;
+      aspect-ratio: 9 / 16;
+    }
+  }
+
+  .reel-media, .reel-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* TIME BADGE */
+  .reel-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #000;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 20px;
+    z-index: 2;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  /* SEE MORE LINK CARD */
+  .see-more-card {
+    display: block;
+    text-decoration: none;
+    position: relative;
+  }
+  
+  .see-more-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+    pointer-events: none;
+  }
+
+  .see-more-button {
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    color: #333;
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 3;
+  }
+
+  .see-more-card:hover .see-more-button {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  }
+</style>
+
+<div class="reels-section">
+  {% if section.settings.heading != blank %}
+    <h2 class="reels-heading">{{ section.settings.heading }}</h2>
+  {% endif %}
+
+  <div class="reels-grid">
+    {% for block in section.blocks %}
+      
+      {% case block.type %}
+        
+        {% when 'reel' %}
+        <div class="reel-card" {{ block.shopify_attributes }}>
+          
+          {% if block.settings.video_file != blank %}
+            {% assign duration_ms = block.settings.video_file.duration %}
+            {% if duration_ms > 0 %}
+              {% assign total_seconds = duration_ms | divided_by: 1000 %}
+              {% assign minutes = total_seconds | divided_by: 60 %}
+              {% assign seconds = total_seconds | modulo: 60 %}
+              {% if seconds < 10 %}{% assign seconds = seconds | prepend: '0' %}{% endif %}
+              <div class="reel-badge">{{ minutes }}:{{ seconds }}</div>
+            {% endif %}
+            
+            {{ block.settings.video_file | video_tag: autoplay: true, loop: true, muted: true, controls: false, class: 'reel-video', image_size: '600x' }}
+          {% else %}
+             {% if block.settings.cover_image != blank %}
+                {{ block.settings.cover_image | image_url: width: 600 | image_tag: class: 'reel-media', loading: 'lazy' }}
+             {% else %}
+                {{ 'collection-1' | placeholder_svg_tag: 'reel-media' }}
+             {% endif %}
+          {% endif %}
+        </div>
+
+        {% when 'see_more' %}
+        <a href="{{ block.settings.link_url | default: '#' }}" class="reel-card see-more-card" {{ block.shopify_attributes }}>
+           
+           {% if block.settings.video_file != blank %}
+              {% assign duration_ms = block.settings.video_file.duration %}
+              {% if duration_ms > 0 %}
+                {% assign total_seconds = duration_ms | divided_by: 1000 %}
+                {% assign minutes = total_seconds | divided_by: 60 %}
+                {% assign seconds = total_seconds | modulo: 60 %}
+                {% if seconds < 10 %}{% assign seconds = seconds | prepend: '0' %}{% endif %}
+                <div class="reel-badge">{{ minutes }}:{{ seconds }}</div>
+              {% endif %}
+           {% endif %}
+           
+           {% if block.settings.video_file != blank %}
+              {{ block.settings.video_file | video_tag: autoplay: true, loop: true, muted: true, controls: false, class: 'reel-video', image_size: '600x' }}
+           {% else %}
+              {% if block.settings.image != blank %}
+                  {{ block.settings.image | image_url: width: 600 | image_tag: class: 'reel-media', loading: 'lazy' }}
+              {% else %}
+                  {{ 'image' | placeholder_svg_tag: 'reel-media' }}
+              {% endif %}
+           {% endif %}
+           
+           <span class="see-more-button">{{ block.settings.link_text }}</span>
+        </a>
+
+      {% endcase %}
+
+    {% endfor %}
+  </div>
+</div>

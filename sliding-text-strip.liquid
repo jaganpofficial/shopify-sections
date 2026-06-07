@@ -1,0 +1,278 @@
+{% schema %}
+{
+  "name": "Sliding Text Icon Strip",
+  "tag": "section",
+  "class": "section-sliding-text-strip",
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon Color",
+      "default": "#fac446"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Font Size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "slide_interval",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Slide Interval (Seconds)",
+      "default": 4
+    }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Message Text"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "check", "label": "Checkmark" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "star", "label": "Star" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "tag", "label": "Tag" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "none", "label": "None" }
+          ],
+          "default": "check"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sliding Text Icon Strip",
+      "blocks": [
+        {
+          "type": "message",
+          "settings": {
+            "text": "COD Accepted",
+            "icon": "check"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "text": "Shipping All Over India",
+            "icon": "truck"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "text": "Quality Assured",
+            "icon": "shield"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<div class="sliding-strip-container" style="
+  background-color: {{ section.settings.background_color }};
+  padding-top: {{ section.settings.padding_top }}px;
+  padding-bottom: {{ section.settings.padding_bottom }}px;
+">
+  <div class="sliding-strip-wrapper">
+    {% for block in section.blocks %}
+      <div class="sliding-strip-item {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}">
+        <div class="sliding-content" style="color: {{ section.settings.text_color }}; font-size: {{ section.settings.font_size }}px;">
+          {% if block.settings.icon != 'none' %}
+            <span class="sliding-icon" style="color: {{ section.settings.icon_color }};">
+              {% case block.settings.icon %}
+                {% when 'check' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                {% when 'truck' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                {% when 'star' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                {% when 'shield' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                {% when 'heart' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                {% when 'tag' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                {% when 'clock' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              {% endcase %}
+            </span>
+          {% endif %}
+          <span class="sliding-text">{{ block.settings.text }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .sliding-strip-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .sliding-strip-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 800px; /* Constrain width for better centering */
+    height: 30px; /* Adjust based on content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .sliding-strip-item {
+    position: absolute;
+    width: 100%;
+    opacity: 0;
+    transform: translateX(100%); /* Start from right */
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none; /* Prevent interaction when hidden */
+  }
+
+  .sliding-strip-item.active {
+    opacity: 1;
+    transform: translateX(0); /* Center */
+    pointer-events: auto;
+    z-index: 2;
+  }
+
+  .sliding-strip-item.exit {
+    opacity: 0;
+    transform: translateX(-100%); /* Exit to left */
+    z-index: 1;
+  }
+
+  .sliding-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .sliding-icon {
+    display: flex;
+    align-items: center;
+  }
+  
+  .sliding-icon svg {
+    width: 1.2em; /* Scale with font size */
+    height: 1.2em;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .sliding-strip-wrapper {
+      height: 24px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const container = document.querySelector('.sliding-strip-wrapper');
+    if (!container) return;
+
+    const items = container.querySelectorAll('.sliding-strip-item');
+    if (items.length <= 1) return;
+
+    let currentIndex = 0;
+    const intervalTime = {{ section.settings.slide_interval | times: 1000 }}; // Use Liquid setting
+
+    function showNextItem() {
+      const currentItem = items[currentIndex];
+      
+      // Calculate next index
+      let nextIndex = currentIndex + 1;
+      if (nextIndex >= items.length) {
+        nextIndex = 0;
+      }
+      
+      const nextItem = items[nextIndex];
+
+      // Current item slides out to left
+      currentItem.classList.remove('active');
+      currentItem.classList.add('exit');
+
+      // Next item slides in from right (prepare it first)
+      // Removing 'exit' resets it to right side (transform: translateX(100%)) via CSS default for non-active/non-exit
+      nextItem.classList.remove('exit'); 
+      
+      // Small delay to allow browser to register the removal of 'exit' class (reset position) before adding 'active'
+      requestAnimationFrame(() => {
+        nextItem.classList.add('active');
+      });
+
+      // Update index
+      currentIndex = nextIndex;
+    }
+
+    // Start the loop
+    setInterval(showNextItem, intervalTime);
+  });
+</script>
